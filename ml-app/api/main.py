@@ -1,22 +1,24 @@
+from pathlib import Path
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
-from pathlib import Path
 import joblib, json, pandas as pd
 
 app = FastAPI(title="Insurance & Diabetes API")
 
-MODELS = Path("models")
+ROOT = Path(__file__).resolve().parents[1] 
+MODELS = ROOT / "models"
+
 INS_MODEL_PATH = MODELS / "insurance_model.pkl"
 DIA_MODEL_PATH = MODELS / "diabetes_model.pkl"
 DIA_THR_PATH   = MODELS / "diabetes_threshold.json"
 
-# carga de modelos
+# Carga de modelos
 insurance_model = joblib.load(INS_MODEL_PATH)
 diabetes_model  = joblib.load(DIA_MODEL_PATH)
 with open(DIA_THR_PATH, "r") as f:
     diabetes_threshold = json.load(f)["threshold"]
 
-# definicion datos de entrada
+# definición datos de entrada
 class InsuranceInput(BaseModel):
     age: int = Field(30, ge=0, le=120)
     bmi: float = Field(25.0, ge=10, le=70)
@@ -39,7 +41,8 @@ class DiabetesInput(BaseModel):
 def root():
     return {
         "msg": "OK",
-        "docs": "/docs",
+        "docs_local": "/docs",
+        "docs_vercel": "/api/main/docs",
         "endpoints": ["/predict/insurance", "/predict/diabetes"],
         "threshold_diabetes": diabetes_threshold
     }
