@@ -249,10 +249,6 @@ Respuesta: {"probability": p, "threshold": 0.4, "prediction": 0/1}
 
 ---
 
-## ✅ Checklist de Entrega
-- [x] Repo GitHub con código + este README  
-- [x] Modelos entrenados y guardados en `ml-app/models/`  
-- [x] Reportes de importancias y métricas en `ml-app/reports/`  
-- [x] API FastAPI en producción (Render)  
-- [x] Frontend simple en producción (Vercel)  
-- [x] Respuestas a 1–6 incluidas en el README
+## BACKEND Y FRONTEND
+- backend: https://ia2-regresion-seguro-y-diabetes.onrender.com
+- frontend: https://ia-2-regresion-seguro-y-diabetes.vercel.app
