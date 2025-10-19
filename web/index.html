@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>IA2 – Seguro médico & Diabetes</title>
+<style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    body { margin: 0; background:#0b1220; color:#e6e8f2; }
+    .wrap { max-width: 980px; margin: 40px auto; padding: 0 16px; }
+    h1 { margin: 0 0 8px; }
+    .card { background:#0f172a; border:1px solid #223; border-radius:16px; padding:20px; margin:18px 0; }
+    .grid { display:grid; gap:12px; }
+    .two { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    label { font-size: 14px; opacity:.9; }
+    input, select { width:100%; padding:10px 12px; border-radius:12px; border:1px solid #334; background:#0b1325; color:#e6e8f2; }
+    button { background:#6366f1; color:white; border:0; padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:600; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .row { display:flex; gap:12px; align-items:center; }
+    .muted { opacity:.8; font-size:13px; }
+    .result { background:#0b1325; padding:12px; border-radius:12px; border:1px dashed #334; white-space:pre-wrap; }
+    a { color:#8ab4ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <h1>IA2 – Seguro médico & Diabetes</h1>
+    <p class="muted">Backend: <code id="base"></code> – <a id="docs" target="_blank">/docs</a></p>
+
+    <div class="card">
+    <h2>🩺 Predicción de costos de seguro</h2>
+    <form id="form-insurance" class="grid two">
+        <div><label>Edad</label><input type="number" name="age" value="30" min="0" max="120" required></div>
+        <div><label>BMI (IMC)</label><input type="number" name="bmi" value="25" step="0.1" min="10" max="70" required></div>
+        <div><label>Hijos</label><input type="number" name="children" value="0" min="0" max="10" required></div>
+        <div>
+        <label>Sexo</label>
+        <select name="sex">
+            <option value="male">male</option>
+            <option value="female">female</option>
+        </select>
+        </div>
+        <div>
+        <label>Fumador</label>
+        <select name="smoker">
+            <option value="no">no</option>
+            <option value="yes">yes</option>
+        </select>
+        </div>
+        <div>
+        <label>Región</label>
+        <select name="region">
+            <option>southwest</option>
+            <option>southeast</option>
+            <option>northwest</option>
+            <option>northeast</option>
+        </select>
+        </div>
+        <div class="row" style="grid-column:1/-1; justify-content:flex-end">
+        <button id="btn-insurance" type="submit">Calcular costo</button>
+        </div>
+    </form>
+    <div id="out-insurance" class="result"></div>
+    </div>
+
+    <div class="card">
+    <h2>🧪 Predicción de diabetes</h2>
+    <form id="form-diabetes" class="grid two">
+        <div><label>Pregnancies</label><input type="number" name="Pregnancies" value="2" min="0" max="20" required></div>
+        <div><label>Glucose</label><input type="number" name="Glucose" value="130" min="0" max="300" required></div>
+        <div><label>BloodPressure</label><input type="number" name="BloodPressure" value="72" min="0" max="200" required></div>
+        <div><label>SkinThickness</label><input type="number" name="SkinThickness" value="20" min="0" max="100" required></div>
+        <div><label>Insulin</label><input type="number" name="Insulin" value="80" min="0" max="900" required></div>
+        <div><label>BMI</label><input type="number" name="BMI" value="28" step="0.1" min="10" max="70" required></div>
+        <div><label>DiabetesPedigreeFunction</label><input type="number" name="DiabetesPedigreeFunction" value="0.5" step="0.01" min="0" max="3" required></div>
+        <div><label>Age</label><input type="number" name="Age" value="45" min="0" max="120" required></div>
+        <div class="row" style="grid-column:1/-1; justify-content:flex-end">
+        <button id="btn-diabetes" type="submit">Predecir diabetes</button>
+        </div>
+    </form>
+    <div id="out-diabetes" class="result"></div>
+    </div>
+</div>
+
+<script>
+    // 1) Configura tu API base (Render)
+    const BASE = "https://ia2-regresion-seguro-y-diabetes.onrender.com";
+    document.getElementById("base").textContent = BASE;
+    document.getElementById("docs").href = BASE + "/docs";
+
+    // Helpers
+    const toJSON = (form) => Object.fromEntries(new FormData(form).entries());
+    const pretty = (obj) => JSON.stringify(obj, null, 2);
+
+    // 2) Insurance
+    const fIns = document.getElementById("form-insurance");
+    const btnIns = document.getElementById("btn-insurance");
+    const outIns = document.getElementById("out-insurance");
+    fIns.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    btnIns.disabled = true;
+    outIns.textContent = "Calculando...";
+    try {
+        const res = await fetch(BASE + "/predict/insurance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(toJSON(fIns))
+        });
+        const data = await res.json();
+        outIns.textContent = pretty(data);
+    } catch (err) {
+        outIns.textContent = "Error: " + err;
+    } finally {
+        btnIns.disabled = false;
+    }
+    });
+
+    // 3) Diabetes
+    const fDia = document.getElementById("form-diabetes");
+    const btnDia = document.getElementById("btn-diabetes");
+    const outDia = document.getElementById("out-diabetes");
+    fDia.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    btnDia.disabled = true;
+    outDia.textContent = "Calculando...";
+    try {
+        const res = await fetch(BASE + "/predict/diabetes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(toJSON(fDia))
+        });
+        const data = await res.json();
+        outDia.textContent = pretty(data);
+    } catch (err) {
+        outDia.textContent = "Error: " + err;
+    } finally {
+        btnDia.disabled = false;
+    }
+    });
+</script>
+</body>
+</html>
