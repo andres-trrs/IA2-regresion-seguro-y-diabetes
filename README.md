@@ -14,11 +14,10 @@ Aplicación completa (ML + API + Front) que:
 ## 🌐 Producción
 
 - **Backend (FastAPI, Swagger UI):**  
-  `https://ia2-regresion-seguro-y-diabetes.onrender.com/docs`
+  `https://ia2-regresion-seguro-y-diabetes.onrender.com`
 
 - **Frontend (Vercel):**  
-  `https://<TU_FRONTEND_VERCEL>.vercel.app`  
-  > Reemplaza con tu URL real de Vercel.
+  `https://ia-2-regresion-seguro-y-diabetes.vercel.app`  
 
 ---
 
@@ -248,7 +247,3 @@ Respuesta: {"probability": p, "threshold": 0.4, "prediction": 0/1}
 - Datasets: `insurance.csv` (Kaggle) y **PIMA Indians Diabetes** (Kaggle/UCI).
 
 ---
-
-## BACKEND Y FRONTEND
-- backend: https://ia2-regresion-seguro-y-diabetes.onrender.com
-- frontend: https://ia-2-regresion-seguro-y-diabetes.vercel.app
